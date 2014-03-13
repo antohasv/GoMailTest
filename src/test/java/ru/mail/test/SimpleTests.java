@@ -9,7 +9,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-import ru.mail.go.PageObject;
+import ru.mail.go.Converter;
+import ru.mail.go.Searcher;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.MalformedURLException;
@@ -19,8 +20,9 @@ import java.util.List;
 public class SimpleTests {
     public static final String URL_GO_MAIL_RU = "http://go.mail.ru/";
     private WebDriver driver;
+    private Converter converter;
 
-    @BeforeMethod
+/*    @BeforeMethod
     @Parameters({"browser", "hub", "url"})
     public void setUp(String browser, String hub, String url) throws MalformedURLException {
         if (browser.toLowerCase().equals("chrome"))
@@ -31,107 +33,99 @@ public class SimpleTests {
             throw new NotImplementedException();
         this.driver.manage().window().maximize();
         this.driver.get(url);
+
+        loadPage();
+        converter = new Converter(driver);
+    }*/
+
+    private void loadPage() {
+        Searcher searcher = new Searcher(driver);
+        searcher.enterText("кг в фунты");
+        searcher.go();
     }
 
-/*
     @BeforeMethod
     public void setUp() throws Exception {
         driver = new FirefoxDriver();
         driver.navigate().to(URL_GO_MAIL_RU);
-    }
-*/
-
-    @Test
-    public void testSuggestButtonTo() throws Exception {
         loadPage();
-
+        converter = new Converter(driver);
     }
+
 
     @Test
     public void testConverterKgToPounds() {
-        PageObject pageObject = loadPage();
-        pageObject.enterValue("10000");
-        String from = pageObject.getValueButtonFrom();
-        String to = pageObject.getValueButtonTo();
+        converter.enterValue("10000");
+        String from = converter.getMeasureFrom();
+        String to = converter.getMeasureTo();
 
         Assert.assertEquals(from, "килограмм");
         Assert.assertEquals(to, "фунта");
-        Assert.assertEquals(pageObject.getResult(), "22 046,22622");
+        Assert.assertEquals(converter.getResultValue(), "22 046,22622");
     }
 
     @Test
     public void testChangeConvertation() throws Exception {
-        PageObject pageObject = loadPage();
-        pageObject.pressedButtonFrom();
+        converter.pressedButtonFrom();
 
-        List<String> measures = pageObject.getValueMeasureListFrom();
-        pageObject.pressedToValueMeasureSuggestFrom(measures.get(3));
+        List<String> measures = converter.getValueMeasureListFrom();
+        converter.pressedToValueMeasureSuggestFrom(measures.get(3));
 
-        Assert.assertEquals(pageObject.getValueButtonFrom(), "тройская унция");
+        Assert.assertEquals(converter.getMeasureFrom(), "тройская унция");
     }
 
     @Test
     public void testSwapConvertation() throws Exception {
-        PageObject pageObject = loadPage();
-        pageObject.enterValue("10000");
-        pageObject.changeConvertation();
+        converter.enterValue("10000");
+        converter.changeConvertation();
 
-        Assert.assertEquals(pageObject.getResult(), "4 535,9237");
+        Assert.assertEquals(converter.getResultValue(), "4 535,9237");
     }
 
     @Test
     public void testMeasureSelector() throws Exception {
-        PageObject pageObject = loadPage();
-        pageObject.pressedToMeasureSelector();
+        converter.pressedToMeasureSelector();
 
-        List<String> measure = pageObject.getMeasureSelectorList();
+        List<String> measure = converter.getMeasureSelectorList();
         Assert.assertTrue(measure.size() == 11);
 
-        pageObject.changeConvertation(measure.get(3));
+        converter.changeConvertation(measure.get(3));
 
-        Assert.assertEquals(pageObject.getCurrentSelectedMeasure(), "скорость");
+        Assert.assertEquals(converter.getCurrentSelectedMeasure(), "скорость");
     }
 
     @Test
     public void testConvertation() throws Exception {
-        PageObject pageObject = loadPage();
-        pageObject.pressedToMeasureSelector();
+        converter.pressedToMeasureSelector();
 
         String testHour = "60";
 
-        chooseMeasure(pageObject, 4);//time
-        chooseInInputMenu(pageObject, 5); //hour
-        chooseInOutputMenu(pageObject, 4); //minutes
+        chooseMeasure(converter, 4);//time
+        chooseInInputMenu(converter, 5); //hour
+        chooseInOutputMenu(converter, 4); //minutes
 
-        pageObject.enterValue(testHour);
-        Assert.assertEquals(pageObject.getResult(), "3 600");
+        converter.enterValue(testHour);
+        Assert.assertEquals(converter.getResultValue(), "3 600");
     }
 
-    private void chooseMeasure(PageObject pageObject, int id) {
-        List<String> measure = pageObject.getMeasureSelectorList();
-        pageObject.changeConvertation(measure.get(id));
-        pageObject.changeConvertation();
+    private void chooseMeasure(Converter converter, int id) {
+        List<String> measure = converter.getMeasureSelectorList();
+        converter.changeConvertation(measure.get(id));
+        converter.changeConvertation();
     }
 
-    private void chooseInOutputMenu(PageObject pageObject, int id) {
-        pageObject.pressedButtonTo();
-        List<String> valueMeasureTo = pageObject.getValueMeasureListTo();
+    private void chooseInOutputMenu(Converter converter, int id) {
+        converter.pressedButtonTo();
+        List<String> valueMeasureTo = converter.getValueMeasureListTo();
 
-        pageObject.pressedToValueMeasureSuggestTo(valueMeasureTo.get(id));
+        converter.pressedToValueMeasureSuggestTo(valueMeasureTo.get(id));
     }
 
-    private void chooseInInputMenu(PageObject pageObject, int id) {
-        pageObject.pressedButtonFrom();
-        List<String> valueMeasureFrom = pageObject.getValueMeasureListFrom();
+    private void chooseInInputMenu(Converter converter, int id) {
+        converter.pressedButtonFrom();
+        List<String> valueMeasureFrom = converter.getValueMeasureListFrom();
 
-        pageObject.pressedToValueMeasureSuggestFrom(valueMeasureFrom.get(id));
-    }
-
-    private PageObject loadPage() {
-        PageObject pageObject = new PageObject(driver);
-        pageObject.enterTextToSearcher("кг в фунты");
-        pageObject.clickButtonToSearch();
-        return pageObject;
+        converter.pressedToValueMeasureSuggestFrom(valueMeasureFrom.get(id));
     }
 
     @AfterMethod
