@@ -4,13 +4,13 @@
         {
             "browserName": "firefox",
             "version": "ANY",
-            "platform": "LINUX",
+            "platform": "WINDOWS",
             "maxInstances": 5
         },
         {
             "browserName": "chrome",
             "version": "ANY",
-            "platform": "LINUX",
+            "platform": "WINDOWS",
             "maxInstances": 5
         }
     ],

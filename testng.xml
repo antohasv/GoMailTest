@@ -1,20 +1,20 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="auto test framework tests"
-       verbose="0"
-       parallel="tests"
+       verbose="2"
+       parallel="methods"
        thread-count="4">
 
     <parameter name="url" value="http://go.mail.ru"/>
     <parameter name="hub" value="http://localhost:4444/wd/hub"/>
 
-    <test name="chrome">
+    <test name="chrome" parallel="true">
         <parameter name="browser" value="chrome"/>
         <classes>
             <class name="ru.mail.test.SimpleTests"/>
         </classes>
     </test>
 
-    <test name="firefox">
+    <test name="firefox" parallel="true">
         <parameter name="browser" value="firefox"/>
         <classes>
             <class name="ru.mail.test.SimpleTests"/>

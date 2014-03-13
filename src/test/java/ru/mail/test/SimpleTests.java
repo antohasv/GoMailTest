@@ -33,6 +33,14 @@ public class SimpleTests {
         this.driver.get(url);
     }
 
+/*
+    @BeforeMethod
+    public void setUp() throws Exception {
+        driver = new FirefoxDriver();
+        driver.navigate().to(URL_GO_MAIL_RU);
+    }
+*/
+
     @Test
     public void testSuggestButtonTo() throws Exception {
         loadPage();
@@ -96,7 +104,7 @@ public class SimpleTests {
         chooseInOutputMenu(pageObject, 4); //minutes
 
         pageObject.enterValue(testHour);
-        Assert.assertEquals(pageObject.getResult(), "3 600");
+        Assert.assertEquals(pageObject.getResult(), "3 600");
     }
 
     private void chooseMeasure(PageObject pageObject, int id) {
